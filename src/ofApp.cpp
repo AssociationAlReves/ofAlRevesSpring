@@ -1,8 +1,5 @@
 #include "ofApp.h"
 
-int curIndex;
-ofVec3f repulsionCenter;
-
 //--------------------------------------------------------------
 void ofApp::setup() {
 
@@ -29,56 +26,24 @@ void ofApp::setup() {
 	gui.add(repulsionStrength.set("repulsionStrength", 5, -1500, 1500));
 
 	bShowGui = false;
-	initNodesAndSprings();
+
+	initLianas();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (bRepulse) {
-		cout << "Replusion" << ofToString(ofGetFrameNum()) << endl;
-	}
-
-	// let all nodes repel each other
-	for (int i = 0; i < nodes.size(); i++) {
-		if (bRepulse) {
-			nodes[i]->attract(nodes, repulsionCenter, repulsionStrength, repulsionRadius);
-		}
-		else {
-			nodes[i]->attract(nodes);
-		}
-	}
-	// apply spring forces
-	for (int i = 0; i < springs.size(); i++) {
-		springs[i]->update();
-	}
-	// apply velocity vector and update position
-	for (int i = 0; i < nodes.size(); i++) {
-		nodes[i]->update(gravity);
-	}
-
-	if (curIndex > -1) {
-		nodes[curIndex]->setPosition(mouseX, mouseY);
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->update();
 	}
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	
+
 	ofClear(0);
-	ofSetColor(ofColor::white);
-	//ofSetColor(0, 130, 164);
-	ofSetLineWidth(lineWidth);
-	for (int i = 0; i < springs.size(); i++) {
-		ofLine(springs[i]->fromNode->x, springs[i]->fromNode->y, springs[i]->toNode->x, springs[i]->toNode->y);
-	}
-	// draw nodes
-	//noStroke();
-	for (int i = 0; i < nodes.size(); i++) {
-		ofSetColor(255);
-		ofFill();
-		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter, nodeDiameter);
-		/*ofSetColor(0);
-		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter - 4, nodeDiameter - 4);*/
+
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->draw();
 	}
 
 	if (bShowGui)
@@ -89,54 +54,45 @@ void ofApp::draw() {
 
 
 //--------------------------------------------------------------
-void ofApp::initNodesAndSprings() {
+void ofApp::initLianas() {
 
-	bRepulse = false;
-	curIndex = -1;
-	nodes.clear();
-	springs.clear();
-
-	// init nodes
-	int width = ofGetWidth();
-	int height = ofGetHeight();
-	float rad = nodeDiameter / 2.f;
-	for (int i = 0; i < numNodes; i++) {
-		ofxNode *node = new ofxNode(width / 2 + ofRandom(-200, 200), height / 2 + ofRandom(-200, 200));
-		node->setBoundary(rad, rad, width - rad, height - rad);
-		node->radius = nodeRadius;
-		node->strength = nodeStrength;
-		node->damping = nodeDamping;
-		node->ramp = nodeRamp;
-		node->maxVelocity = nodeVelocity;
-		node->id = i;
-		nodes.push_back(node);
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->cleanUp();
+		delete lianas[i];
 	}
+	lianas.clear();
 
-	// set springs randomly
+	ofxLiana* liana = new ofxLiana();
+	liana->numNodes = numNodes;
+	liana->nodeRadius = nodeRadius;
+	liana->nodeStrength = nodeStrength;
+	liana->nodeDiameter = nodeDiameter;
+	liana->nodeDamping = nodeDamping;
+	liana->nodeRamp = nodeRamp;
+	liana->nodeVelocity = nodeVelocity;
 
-	for (int j = 0; j < nodes.size() - 1; j++) {
-		int rCount = floor(ofRandom(1, 2));
-		for (int i = 0; i < rCount; i++) {
-			int r = floor(ofRandom(j + 1, nodes.size()));
-			ofxSpring *newSpring = new ofxSpring(*nodes[j], *nodes[r]);
-			newSpring->length = springLength;
-			newSpring->stiffness = springStiffness;
-			newSpring->damping = stringDamping;
-			newSpring->id = j;
-			springs.push_back(newSpring);
-		}
-	}
+	liana->springLength = springLength;
+	liana->springStiffness = springStiffness;
+	liana->stringDamping = stringDamping;
+
+	liana->gravity = gravity;
+	liana->lineWidth = lineWidth;
+	liana->setup();
+
+	lianas.push_back(liana);
+
 }
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
 	switch (key) {
-	case 'r': initNodesAndSprings(); break;
+	case 'r': initLianas(); break;
 	case 'h': bShowGui = !bShowGui; break;
-	case 'l': gui.loadFromFile(SPRING_SETTINGS_FILE);
-	case ' ': {
-		bRepulse = true;
-		repulsionCenter = ofVec3f(mouseX, mouseY);
-	}break;
+	case 'l': gui.loadFromFile(SPRING_SETTINGS_FILE); break;
+	}
+
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->keyPressed(key);
 	}
 }
 
@@ -159,22 +115,15 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-	// Ignore anything greater than this distance
-	float maxDist = 20;
-	for (int i = 0; i < nodes.size(); i++) {
-		ofxNode *checkNode = nodes[i];
-		float d = ofVec2f(mouseX, mouseY).distance(ofVec2f(checkNode->x, checkNode->y));
-		if (d < maxDist) {
-			curIndex = i;
-			maxDist = d;
-		}
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->mousePressed(x, y, button);
 	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
-	if (curIndex > -1) {
-		curIndex = -1;
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->mouseReleased(x, y, button);
 	}
 }
 

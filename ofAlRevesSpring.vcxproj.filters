@@ -110,6 +110,9 @@
     <ClInclude Include="src\ofxSpring.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\ofxLiana.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

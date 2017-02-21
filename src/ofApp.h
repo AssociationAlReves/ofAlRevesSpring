@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxLiana.h"
 #include "ofxSpring.h"
 #include "ofxNode.h"
 #include "ofxGui.h"
@@ -24,16 +25,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		void initNodesAndSprings();
+		void initLianas();
 
-		// an array for the nodes
-		vector<ofxNode*> nodes;// = new Node[100];
-							  // an array for the springs
-		vector<ofxSpring*> springs; // = new Spring[0];
-
-								   // dragged node
-
-
+		vector<ofxLiana*> lianas;
+		
 		ofxPanel gui;
 
 		ofParameter<int> numNodes;
