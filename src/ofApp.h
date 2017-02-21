@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxLiana.h"
-#include "ofxSpring.h"
-#include "ofxNode.h"
+#include "scenes\zebra\ofxLiana.h"
+#include "scenes\zebra\ofxSpring.h"
+#include "scenes\zebra\ofxNode.h"
 #include "ofxGui.h"
 
 #define SPRING_SETTINGS_FILE  "spring.xml"

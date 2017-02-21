@@ -66,6 +66,12 @@
     <Filter Include="addons\ofxXmlSettings\libs">
       <UniqueIdentifier>{687714A8-1662-FA1C-261F-50F0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\scenes">
+      <UniqueIdentifier>{3986860c-35b6-4eee-b7bb-90a16dd812aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scenes\zebra">
+      <UniqueIdentifier>{78b9e309-9ad6-43cf-97fd-d6052cde5336}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
@@ -104,14 +110,14 @@
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h">
       <Filter>addons\ofxXmlSettings\libs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ofxNode.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\scenes\zebra\ofxLiana.h">
+      <Filter>src\scenes\zebra</Filter>
     </ClInclude>
-    <ClInclude Include="src\ofxSpring.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\scenes\zebra\ofxNode.h">
+      <Filter>src\scenes\zebra</Filter>
     </ClInclude>
-    <ClInclude Include="src\ofxLiana.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\scenes\zebra\ofxSpring.h">
+      <Filter>src\scenes\zebra</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
