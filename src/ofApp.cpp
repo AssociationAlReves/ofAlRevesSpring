@@ -21,6 +21,9 @@ void ofApp::setup() {
 	gui.add(springStiffness.set("springStiffness", 3, 0, 10));
 	gui.add(stringDamping.set("stringDamping", 0.9, 0, 2));
 
+	gui.add(gravity.set("gravity", 0.5, 0, 10));
+	gui.add(lineWidth.set("lineWidth", 2, 0, 50));
+
 
 	gui.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
 	gui.add(repulsionStrength.set("repulsionStrength", 5, -1500, 1500));
@@ -31,6 +34,10 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (bRepulse) {
+		cout << "Replusion" << ofToString(ofGetFrameNum()) << endl;
+	}
+
 	// let all nodes repel each other
 	for (int i = 0; i < nodes.size(); i++) {
 		if (bRepulse) {
@@ -57,8 +64,10 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 
-	ofSetColor(0, 130, 164);
-	ofSetLineWidth(2);
+	ofClear(0);
+	ofSetColor(ofColor::white);
+	//ofSetColor(0, 130, 164);
+	ofSetLineWidth(lineWidth);
 	for (int i = 0; i < springs.size(); i++) {
 		ofLine(springs[i]->fromNode->x, springs[i]->fromNode->y, springs[i]->toNode->x, springs[i]->toNode->y);
 		//ofDrawBitmapStringHighlight("s"+ofToString(springs[i]->id), springs[i]->fromNode->x+10, springs[i]->fromNode->y+10, ofColor::white, ofColor::black);

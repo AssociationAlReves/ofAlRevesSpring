@@ -159,7 +159,8 @@ inline ofxNode::ofxNode() : ofVec3f(0)
 // ------ calculate attraction ------
 inline void ofxNode::attract(vector<ofxNode*> & theNodes) {
 	// attraction or repulsion part
-	for (int i = 0; i< theNodes.size(); i++) {
+	for (int i = 0; i< theNodes.size(); i++)
+	{
 		ofxNode *otherNode = theNodes[i];
 		//// stop when empty
 		//if (otherNode == NULL)
@@ -193,7 +194,7 @@ inline void ofxNode::attract(vector<ofxNode*> & theNodes, const ofVec3f& repulsi
 
 			this->velocity->x += df.x;
 			this->velocity->y += df.y;
-			this->velocity->z += df.z;
+			//this->velocity->z += df.z;
 		}
 	}
 }
@@ -202,14 +203,14 @@ inline void ofxNode::attract(ofxNode* theNode) {
 	float d = this->distance((ofVec3f)(*theNode));
 
 	if (d > 0 && d < radius) {
-	float s = pow(d / radius, 1 / ramp);
-	float f = s * 9.f * strength * (1.f / (s + 1.f) + ((s - 3.f) / 4.f)) / d;
-	ofVec3f df = (ofVec3f)*this - (ofVec3f)(*theNode);
-	df *= f;
+		float s = pow(d / radius, 1 / ramp);
+		float f = s * 9.f * strength * (1.f / (s + 1.f) + ((s - 3.f) / 4.f)) / d;
+		ofVec3f df = (ofVec3f)*this - (ofVec3f)(*theNode);
+		df *= f;
 
-	theNode->velocity->x += df.x;
-	theNode->velocity->y += df.y;
-	theNode->velocity->z += df.z;
+		theNode->velocity->x += df.x;
+		theNode->velocity->y += df.y;
+		theNode->velocity->z += df.z;
 	}
 }
 
@@ -224,7 +225,9 @@ inline void ofxNode::setPosition(float theX, float theY)
 
 inline void ofxNode::update()
 {
-	update(false, false, false);
+	this->velocity->y += 5.5;
+
+	update(false, false, true);
 }
 inline void ofxNode::update(bool theLockX, bool theLockY, bool theLockZ)
 {

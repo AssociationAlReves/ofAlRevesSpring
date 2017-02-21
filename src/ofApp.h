@@ -49,6 +49,10 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> stringDamping;
 
 
+		ofParameter<float> gravity;
+		ofParameter<float> lineWidth;
+
+
 		ofParameter<float> repulsionRadius;
 		ofParameter<float> repulsionStrength;
 		bool bRepulse;
