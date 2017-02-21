@@ -84,7 +84,7 @@ public:
 
 	ofxNode();
 
-	void update();
+	void update(float gravity);
 	void update(bool theLockX, bool theLockY, bool theLockZ);
 
 	void setBoundary(const float theMinX, const float theMinY, const float theMinZ,
@@ -223,9 +223,9 @@ inline void ofxNode::setPosition(float theX, float theY)
 
 
 
-inline void ofxNode::update()
+inline void ofxNode::update(float gravity)
 {
-	this->velocity->y += 5.5;
+	this->velocity->y += gravity;
 
 	update(false, false, true);
 }

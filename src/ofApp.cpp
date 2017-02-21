@@ -11,7 +11,7 @@ void ofApp::setup() {
 	gui.add(numNodes.set("numNodes", 100, 2, 1000));
 	gui.add(nodeRadius.set("nodeRadius", 100, 1, 200));
 	gui.add(nodeStrength.set("nodeStrength", -5, -100, 100));
-	gui.add(nodeDiameter.set("nodeDiameter", 16, 1, 50));
+	gui.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
 	gui.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
 	gui.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
 	gui.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 1));
@@ -21,8 +21,8 @@ void ofApp::setup() {
 	gui.add(springStiffness.set("springStiffness", 3, 0, 10));
 	gui.add(stringDamping.set("stringDamping", 0.9, 0, 2));
 
-	gui.add(gravity.set("gravity", 0.5, 0, 10));
-	gui.add(lineWidth.set("lineWidth", 2, 0, 50));
+	gui.add(gravity.set("gravity", 0, -10, 10));
+	gui.add(lineWidth.set("lineWidth", 2, 0, 20));
 
 
 	gui.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
@@ -53,7 +53,7 @@ void ofApp::update() {
 	}
 	// apply velocity vector and update position
 	for (int i = 0; i < nodes.size(); i++) {
-		nodes[i]->update();
+		nodes[i]->update(gravity);
 	}
 
 	if (curIndex > -1) {
@@ -63,14 +63,13 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-
+	
 	ofClear(0);
 	ofSetColor(ofColor::white);
 	//ofSetColor(0, 130, 164);
 	ofSetLineWidth(lineWidth);
 	for (int i = 0; i < springs.size(); i++) {
 		ofLine(springs[i]->fromNode->x, springs[i]->fromNode->y, springs[i]->toNode->x, springs[i]->toNode->y);
-		//ofDrawBitmapStringHighlight("s"+ofToString(springs[i]->id), springs[i]->fromNode->x+10, springs[i]->fromNode->y+10, ofColor::white, ofColor::black);
 	}
 	// draw nodes
 	//noStroke();
@@ -78,9 +77,8 @@ void ofApp::draw() {
 		ofSetColor(255);
 		ofFill();
 		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter, nodeDiameter);
-		ofSetColor(0);
-		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter - 4, nodeDiameter - 4);
-		//ofDrawBitmapStringHighlight(ofToString(nodes[i]->id), nodes[i]->x, nodes[i]->y);
+		/*ofSetColor(0);
+		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter - 4, nodeDiameter - 4);*/
 	}
 
 	if (bShowGui)
