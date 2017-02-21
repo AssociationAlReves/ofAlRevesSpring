@@ -5,26 +5,35 @@ void ofApp::setup() {
 
 
 	gui.setup("panel", SPRING_SETTINGS_FILE); // most of the time you don't need a name but don't forget to call setup
-	gui.add(numNodes.set("numNodes", 100, 2, 1000));
-	gui.add(nodeRadius.set("nodeRadius", 100, 1, 200));
-	gui.add(nodeStrength.set("nodeStrength", -5, -100, 100));
-	gui.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
-	gui.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
-	gui.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
-	gui.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 1));
+	
+	zebraParams.setName("Main");
+	zebraParams.add(randomNodes.set("randomNodes", true));
+	zebraParams.add(numLianas.set("numLianas", 1, 1, 100));
+	zebraParams.add(gravity.set("gravity", 0, -10, 10));
+	zebraParams.add(lineWidth.set("lineWidth", 2, 0, 20));
+	gui.add(zebraParams);
 
 
-	gui.add(springLength.set("springLength", 20, 0, 50));
-	gui.add(springStiffness.set("springStiffness", 3, 0, 10));
-	gui.add(stringDamping.set("stringDamping", 0.9, 0, 2));
+	lianaParams.setName("Lianas");
+	lianaParams.add(numNodes.set("numNodes", 20, 2, 1000));
+	lianaParams.add(nodeRadius.set("nodeRadius", 100, 1, 200));
+	lianaParams.add(nodeStrength.set("nodeStrength", -5, -100, 100));
+	lianaParams.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
+	lianaParams.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
+	lianaParams.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
+	lianaParams.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 1));
 
-	gui.add(gravity.set("gravity", 0, -10, 10));
-	gui.add(lineWidth.set("lineWidth", 2, 0, 20));
 
+	lianaParams.add(springLength.set("springLength", 20, 0, 50));
+	lianaParams.add(springStiffness.set("springStiffness", 3, 0, 10));
+	lianaParams.add(stringDamping.set("stringDamping", 0.9, 0, 2));
+	gui.add(lianaParams);
 
-	gui.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
-	gui.add(repulsionStrength.set("repulsionStrength", 5, -1500, 1500));
-
+	repulsionParams.setName("Repulsion");
+	repulsionParams.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
+	repulsionParams.add(repulsionStrength.set("repulsionStrength", 5, -1500, 1500));
+	gui.add(repulsionParams);
+	
 	bShowGui = false;
 
 	initLianas();
@@ -72,7 +81,6 @@ void ofApp::draw() {
 	}
 }
 
-
 //--------------------------------------------------------------
 void ofApp::initLianas() {
 
@@ -82,24 +90,36 @@ void ofApp::initLianas() {
 	}
 	lianas.clear();
 
-	ofxLiana* liana = new ofxLiana();
-	liana->numNodes = numNodes;
-	liana->nodeRadius = nodeRadius;
-	liana->nodeStrength = nodeStrength;
-	liana->nodeDiameter = nodeDiameter;
-	liana->nodeDamping = nodeDamping;
-	liana->nodeRamp = nodeRamp;
-	liana->nodeVelocity = nodeVelocity;
+	// Create lianas centered
+	float spacing = ofGetWidth() / (numLianas + 1);
+	for (int i = 0; i < numLianas; i++) {
 
-	liana->springLength = springLength;
-	liana->springStiffness = springStiffness;
-	liana->stringDamping = stringDamping;
+		// use ofxLiana() to use original random node placement
+		// use ofxLiana(x) to have all nodes on same X
+		ofxLiana* liana = randomNodes ? new ofxLiana() : new ofxLiana(spacing * (i+1));
+		liana->numNodes = numNodes;
+		liana->nodeRadius = nodeRadius;
+		liana->nodeStrength = nodeStrength;
+		liana->nodeDiameter = nodeDiameter;
+		liana->nodeDamping = nodeDamping;
+		liana->nodeRamp = nodeRamp;
+		liana->nodeVelocity = nodeVelocity;
 
-	liana->gravity = gravity;
-	liana->lineWidth = lineWidth;
-	liana->setup();
+		liana->springLength = springLength;
+		liana->springStiffness = springStiffness;
+		liana->stringDamping = stringDamping;
 
-	lianas.push_back(liana);
+		liana->gravity = gravity;
+		liana->lineWidth = lineWidth;
+
+		//
+		// setup liana with X position
+		liana->setup();
+
+		lianas.push_back(liana);
+
+	}
+	
 
 }
 

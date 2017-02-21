@@ -6,7 +6,7 @@
 #include "scenes\zebra\ofxNode.h"
 #include "ofxGui.h"
 
-#define SPRING_SETTINGS_FILE  "spring.xml"
+#define SPRING_SETTINGS_FILE  "zebra.xml"
 
 class ofApp : public ofBaseApp{
 
@@ -31,6 +31,13 @@ class ofApp : public ofBaseApp{
 		
 		ofxPanel gui;
 
+		ofParameterGroup zebraParams;
+		ofParameter<bool> randomNodes;
+		ofParameter<int> numLianas;
+		ofParameter<float> gravity;
+		ofParameter<float> lineWidth;
+
+		ofParameterGroup lianaParams;
 		ofParameter<int> numNodes;
 		ofParameter<float> nodeRadius;
 		ofParameter<float> nodeStrength;
@@ -43,11 +50,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> springStiffness;
 		ofParameter<float> stringDamping;
 
-
-		ofParameter<float> gravity;
-		ofParameter<float> lineWidth;
-
-
+		ofParameterGroup repulsionParams;
 		ofParameter<float> repulsionRadius;
 		ofParameter<float> repulsionStrength;
 		bool bRepulse;

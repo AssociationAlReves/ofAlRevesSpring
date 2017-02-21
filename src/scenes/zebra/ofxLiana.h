@@ -35,10 +35,14 @@ public:
 	ofVec3f repulsionCenter;
 	int dragNodeIndex;
 
-	
+
+	float xPosition;
+	bool randomPlacement; // if true, nodes are placed at random
+						// if false, nodes X are all at xPosition
+
 	// ------ constructors ------
 
-	ofxLiana(float theX, float theY);
+	ofxLiana(float theX);
 
 	ofxLiana();
 	~ofxLiana();
@@ -47,6 +51,7 @@ public:
 	void draw();
 	void update();
 	void initNodesAndSprings();
+	void initNodesAndSprings_Liana();
 	void cleanUp();
 	void keyPressed(int key);
 	void mousePressed(int x, int y, int button);
@@ -64,8 +69,10 @@ public:
 // implementation
 // ------ constructors ------
 
-inline ofxLiana::ofxLiana(float theX, float theY) {}
-inline ofxLiana::ofxLiana() {}
+inline ofxLiana::ofxLiana(float theX) :
+	xPosition(theX)
+	,randomPlacement(false) {}
+inline ofxLiana::ofxLiana() : randomPlacement(true) {}
 inline ofxLiana::~ofxLiana() {
 	cleanUp();
 }
@@ -117,11 +124,54 @@ inline void ofxLiana::initNodesAndSprings() {
 		}
 	}
 }
+//--------------------------------------------------------------
+inline void ofxLiana::initNodesAndSprings_Liana() {
+
+	bRepulse = false;
+	dragNodeIndex = -1;
+	cleanUp();
+
+	// init nodes
+	int width = ofGetWidth();
+	int height = ofGetHeight();
+	float rad = nodeDiameter / 2.f;
+	for (int i = 0; i < numNodes; i++) {
+		ofxNode *node = new ofxNode(xPosition + ofRandom(-10,10), height / 2 + ofRandom(-200, 200));
+		node->setBoundary(rad, rad, width - rad, height - rad);
+		node->radius = nodeRadius;
+		node->strength = nodeStrength;
+		node->damping = nodeDamping;
+		node->ramp = nodeRamp;
+		node->maxVelocity = nodeVelocity;
+		node->id = i;
+		nodes.push_back(node);
+	}
+
+	// set springs randomly
+
+	for (int j = 0; j < nodes.size() - 1; j++) {
+		int rCount = floor(ofRandom(1, 2));
+		for (int i = 0; i < rCount; i++) {
+			int r = floor(ofRandom(j + 1, nodes.size()));
+			ofxSpring *newSpring = new ofxSpring(*nodes[j], *nodes[r]);
+			newSpring->length = springLength;
+			newSpring->stiffness = springStiffness;
+			newSpring->damping = stringDamping;
+			newSpring->id = j;
+			springs.push_back(newSpring);
+		}
+	}
+}
 inline void ofxLiana::setup() {
 	bRepulse = false;
 	repulsionCenter = ofVec3f();
-
-	initNodesAndSprings();
+	
+	if (randomPlacement) {
+		initNodesAndSprings();
+	}
+	else {
+		initNodesAndSprings_Liana();
+	}
 }
 inline void ofxLiana::update() {
 	if (bRepulse) {
