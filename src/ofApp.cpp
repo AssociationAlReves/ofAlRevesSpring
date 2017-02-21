@@ -33,6 +33,26 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	for (int i = 0; i < lianas.size(); i++) {
+
+		//
+		// set updated params
+		lianas[i]->numNodes = numNodes;
+		lianas[i]->nodeRadius = nodeRadius;
+		lianas[i]->nodeStrength = nodeStrength;
+		lianas[i]->nodeDiameter = nodeDiameter;
+		lianas[i]->nodeDamping = nodeDamping;
+		lianas[i]->nodeRamp = nodeRamp;
+		lianas[i]->nodeVelocity = nodeVelocity;
+
+		lianas[i]->springLength = springLength;
+		lianas[i]->springStiffness = springStiffness;
+		lianas[i]->stringDamping = stringDamping;
+
+		lianas[i]->gravity = gravity;
+		lianas[i]->lineWidth = lineWidth;
+
+		//
+		// update
 		lianas[i]->update();
 	}
 }
