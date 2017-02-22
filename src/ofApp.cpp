@@ -8,30 +8,35 @@ void ofApp::setup() {
 	
 	zebraParams.setName("Main");
 	zebraParams.add(randomNodes.set("randomNodes", true));
+	zebraParams.add(lockX.set("lockX", false));
+	zebraParams.add(lockY.set("lockY", true));
+	zebraParams.add(lockZ.set("lockZ", true));
+	zebraParams.add(lockLastNode.set("lockLastNode", true));
 	zebraParams.add(numLianas.set("numLianas", 1, 1, 100));
-	zebraParams.add(gravity.set("gravity", 0, -10, 10));
+	zebraParams.add(gravity.set("gravity", 0, -2, 2));
 	zebraParams.add(lineWidth.set("lineWidth", 2, 0, 20));
 	gui.add(zebraParams);
 
 
-	lianaParams.setName("Lianas");
-	lianaParams.add(numNodes.set("numNodes", 20, 2, 1000));
-	lianaParams.add(nodeRadius.set("nodeRadius", 100, 1, 200));
-	lianaParams.add(nodeStrength.set("nodeStrength", -5, -1000, 100));
-	lianaParams.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
-	lianaParams.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
-	lianaParams.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
-	lianaParams.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 1));
+	nodeParams.setName("Nodes");
+	nodeParams.add(nodeRadius.set("nodeRadius", 100, 1, 200));
+	nodeParams.add(nodeStrength.set("nodeStrength", -5, -5000, 100));
+	nodeParams.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
+	nodeParams.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
+	nodeParams.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
+	nodeParams.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 10));
+	gui.add(nodeParams);
 
-
-	lianaParams.add(springLength.set("springLength", 20, 0, 50));
-	lianaParams.add(springStiffness.set("springStiffness", 3, 0, 10));
-	lianaParams.add(stringDamping.set("stringDamping", 0.9, 0, 1));
-	gui.add(lianaParams);
+	springParams.setName("Springs");
+	springParams.add(numNodes.set("numNodes", 20, 2, 100));
+	springParams.add(springLength.set("springLength", 20, 0, 500));
+	springParams.add(springStiffness.set("springStiffness", 3, 0, 10));
+	springParams.add(stringDamping.set("stringDamping", 0.9, 0, 1));
+	gui.add(springParams);
 
 	repulsionParams.setName("Repulsion");
 	repulsionParams.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
-	repulsionParams.add(repulsionStrength.set("repulsionStrength", 5, -1500, 10000));
+	repulsionParams.add(repulsionStrength.set("rep.Strength", 5, -1500, 1500));
 	gui.add(repulsionParams);
 	
 	bShowGui = false;
@@ -64,7 +69,7 @@ void ofApp::update() {
 
 		//
 		// update
-		lianas[i]->update();
+		lianas[i]->update(lockX, lockY, lockZ);
 	}
 }
 
@@ -73,9 +78,11 @@ void ofApp::draw() {
 
 	ofClear(0);
 
+	//cam.begin();
 	for (int i = 0; i < lianas.size(); i++) {
 		lianas[i]->draw();
 	}
+	//cam.end();
 
 	if (bShowGui)
 	{
@@ -113,6 +120,7 @@ void ofApp::initLianas() {
 
 		liana->gravity = gravity;
 		liana->lineWidth = lineWidth;
+		liana->lockLastNode = lockLastNode;
 
 		//
 		// setup liana with X position
@@ -132,6 +140,8 @@ void ofApp::keyPressed(int key) {
 	case 'h': bShowGui = !bShowGui; break;
 	case 'l': gui.loadFromFile(SPRING_SETTINGS_FILE); break;
 	case 's': gui.saveToFile(SPRING_SETTINGS_FILE); break;
+	case 'C': cam.enableMouseInput(); break;
+	case 'c': cam.disableMouseInput(); break;
 	}
 
 	for (int i = 0; i < lianas.size(); i++) {

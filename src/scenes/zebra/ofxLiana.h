@@ -39,6 +39,7 @@ public:
 	float xPosition;
 	bool lianaMode; // if true, nodes are placed at random
 						// if false, nodes X are all at xPosition
+	bool lockLastNode;
 
 	// ------ constructors ------
 
@@ -49,7 +50,7 @@ public:
 
 	void setup();
 	void draw();
-	void update();
+	void update(bool theLockX, bool theLockY, bool theLockZ);
 	void initNodesAndSprings();
 	void initNodesAndSprings_Liana();
 	void cleanUp();
@@ -75,7 +76,8 @@ public:
 
 inline ofxLiana::ofxLiana(float theX) :
 	xPosition(theX)
-	, lianaMode(true) {}
+	, lianaMode(true)
+	, lockLastNode(false) {}
 inline ofxLiana::ofxLiana() : lianaMode(false) {}
 inline ofxLiana::~ofxLiana() {
 	cleanUp();
@@ -103,6 +105,8 @@ inline void ofxLiana::initNodesAndSprings() {
 	float rad = nodeDiameter / 2.f;
 	for (int i = 0; i < numNodes; i++) {
 		ofxNode *node = new ofxNode(width / 2 + ofRandom(-200, 200), height / 2 + ofRandom(-200, 200), false);
+		// use this for 3D
+		//node->setBoundary(rad, rad, rad, width - rad, height - rad, width - rad);
 		node->setBoundary(rad, rad, width - rad, height - rad);
 		node->radius = nodeRadius;
 		node->strength = nodeStrength;
@@ -141,11 +145,13 @@ inline void ofxLiana::initNodesAndSprings_Liana() {
 	float spacing = height / (numNodes - 1);
 	float rad = nodeDiameter / 2.f;
 	for (int i = 0; i < numNodes; i++) {
-		bool isLocked = (i == 0);
+		bool isLocked = (i == 0) || (lockLastNode && (i == (numNodes-1)));
 		float xPos = xPosition
 				+ (isLocked ? 0
 					: ofRandom(-50, 50));
 		ofxNode *node = new ofxNode(xPos, spacing * i, isLocked);
+		// use this for 3D
+		//node->setBoundary(rad, rad, rad, width - rad, height - rad, width - rad);
 		node->setBoundary(rad, rad, width - rad, height - rad);
 		node->radius = nodeRadius;
 		node->strength = nodeStrength;
@@ -178,11 +184,8 @@ inline void ofxLiana::setup() {
 		initNodesAndSprings_Liana();
 	}
 }
-inline void ofxLiana::update() {
-	if (bRepulse) {
-		cout << "Replusion" << ofToString(ofGetFrameNum()) << endl;
-	}
-
+inline void ofxLiana::update(bool theLockX, bool theLockY, bool theLockZ) {
+	
 	// let all nodes repel each other
 	for (int i = 0; i < nodes.size(); i++) {
 		if (bRepulse) {
@@ -198,7 +201,7 @@ inline void ofxLiana::update() {
 	}
 	// apply velocity vector and update position
 	for (int i = 0; i < nodes.size(); i++) {
-		nodes[i]->update(gravity);
+		nodes[i]->update(gravity, theLockX, theLockY, theLockZ);
 	}
 
 	if (dragNodeIndex > -1) {
@@ -211,14 +214,14 @@ inline void ofxLiana::draw() {
 	//ofSetColor(0, 130, 164);
 	ofSetLineWidth(lineWidth);
 	for (int i = 0; i < springs.size(); i++) {
-		ofLine(springs[i]->fromNode->x, springs[i]->fromNode->y, springs[i]->toNode->x, springs[i]->toNode->y);
+		ofLine(springs[i]->fromNode->x, springs[i]->fromNode->y, springs[i]->fromNode->z, springs[i]->toNode->x, springs[i]->toNode->y, springs[i]->toNode->z);
 	}
 	// draw nodes
 	//noStroke();
 	for (int i = 0; i < nodes.size(); i++) {
 		ofSetColor(255);
 		ofFill();
-		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter, nodeDiameter);
+		ofEllipse(nodes[i]->x, nodes[i]->y, nodes[i]->z, nodeDiameter, nodeDiameter);
 		/*ofSetColor(0);
 		ofEllipse(nodes[i]->x, nodes[i]->y, nodeDiameter - 4, nodeDiameter - 4);*/
 	}
@@ -244,7 +247,7 @@ inline void ofxLiana::mousePressed(int x, int y, int button) {
 	float maxDist = 20;
 	for (int i = 0; i < nodes.size(); i++) {
 		ofxNode *checkNode = nodes[i];
-		float d = ofVec2f(x, y).distance(ofVec2f(checkNode->x, checkNode->y));
+		float d = ofVec2f(x, y).distance(ofVec3f(checkNode->x, checkNode->y));
 		if (d < maxDist) {
 			dragNodeIndex = i;
 			maxDist = d;

@@ -31,13 +31,20 @@ class ofApp : public ofBaseApp{
 		
 		ofxPanel gui;
 
+		ofEasyCam cam;
+
 		ofParameterGroup zebraParams;
 		ofParameter<bool> randomNodes;
+		ofParameter<bool> lockX;
+		ofParameter<bool> lockY;
+		ofParameter<bool> lockZ;
+
+		ofParameter<bool> lockLastNode;
 		ofParameter<int> numLianas;
 		ofParameter<float> gravity;
 		ofParameter<float> lineWidth;
 
-		ofParameterGroup lianaParams;
+		ofParameterGroup nodeParams;
 		ofParameter<int> numNodes;
 		ofParameter<float> nodeRadius;
 		ofParameter<float> nodeStrength;
@@ -46,6 +53,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> nodeRamp;
 		ofParameter<float> nodeVelocity;
 
+		ofParameterGroup springParams;
 		ofParameter<float> springLength;
 		ofParameter<float> springStiffness;
 		ofParameter<float> stringDamping;

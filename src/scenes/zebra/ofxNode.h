@@ -13,7 +13,7 @@ class ofxNode : public ofVec3f
 {
 public:
 
-	
+
 	// ------ public properties ------
 	// if needed, an ID for the node
 	int id;
@@ -44,11 +44,12 @@ public:
 	float maxZ;
 
 	bool locked; // if true, node can't move (liana top node)
-
 	/**
 	* Velocity vector (speed)
 	*/
 	ofVec3f *velocity;
+	ofVec3f previousVelocity;
+	ofVec3f repulsionForce; // test: no subject to X/Y/Z locks
 	/**
 	* Maximum length of the velocity vector (default = 10)
 	*/
@@ -77,10 +78,10 @@ public:
 	void setPosition(float theX, float theY);
 
 	// ------ constructors ------
-	
+
 	ofxNode(float theX, float theY, bool isLocked);
 
-	void update(float gravity);
+	void update(float gravity, bool theLockX, bool theLockY, bool theLockZ);
 	void update(bool theLockX, bool theLockY, bool theLockZ);
 
 	void setBoundary(const float theMinX, const float theMinY, const float theMinZ,
@@ -101,12 +102,13 @@ inline ofxNode::ofxNode(float theX, float theY, bool isLocked) : ofVec3f(theX, t
 , minZ(std::numeric_limits<float>::min())
 , maxZ(std::numeric_limits<float>::max())
 , velocity(new ofVec3f(0))
+, previousVelocity(ofVec3f(0))
 , maxVelocity(OFXNODE_VELOCITY)
 , damping(OFXNODE_DAMPING)
 , radius(OFXNODE_RADIUS)
 , strength(OFXNODE_STRENGTH)
 , ramp(OFXNODE_RAMP)
-, locked(isLocked) 
+, locked(isLocked)
 {}
 
 
@@ -115,7 +117,7 @@ inline ofxNode::ofxNode(float theX, float theY, bool isLocked) : ofVec3f(theX, t
 // ------ calculate attraction ------
 inline void ofxNode::attract(vector<ofxNode*> & theNodes) {
 	// attraction or repulsion part
-	for (int i = 0; i< theNodes.size(); i++)
+	for (int i = 0; i < theNodes.size(); i++)
 	{
 		ofxNode *otherNode = theNodes[i];
 		// not with itself
@@ -127,24 +129,26 @@ inline void ofxNode::attract(vector<ofxNode*> & theNodes) {
 }
 inline void ofxNode::attract(vector<ofxNode*> & theNodes, const ofVec3f& repulsionCenter, float repulsionStrength, float repulsionRadius) {
 	// attraction or repulsion part
-	for (int i = 0; i< theNodes.size(); i++) {
+	for (int i = 0; i < theNodes.size(); i++) {
 		ofxNode *otherNode = theNodes[i];
 		// not with itself
 		if (otherNode->id == id)
 			continue;
 
 		this->attract(otherNode);
+	}
 
+	repulsionForce = ofVec3f(0);
+	if (!this->locked) {
 		float d = this->distance(repulsionCenter);
 		if (d > 0 && d < repulsionRadius) {
 			float s = pow(d / repulsionRadius, 1 / ramp);
 			float f = s * 9.f * repulsionStrength * (1.f / (s + 1.f) + ((s - 3.f) / 4.f)) / d;
-			ofVec3f df = (ofVec3f)*this - repulsionCenter;
-			df *= f;
-
-			this->velocity->x += df.x;
-			this->velocity->y += df.y;
-			//this->velocity->z += df.z;
+			repulsionForce = (ofVec3f)*this - repulsionCenter;
+			repulsionForce *= f;
+			this->velocity->x += repulsionForce.x;
+			this->velocity->y += repulsionForce.y;
+			this->velocity->z += repulsionForce.z;
 		}
 	}
 }
@@ -161,14 +165,14 @@ inline void ofxNode::attract(ofxNode* theNode) {
 		if (theNode->locked) {
 			this->velocity->x -= df.x;
 			this->velocity->y -= df.y;
-			//this->velocity->z -= df.z;
+			this->velocity->z -= df.z;
 		}
 		else {
 			theNode->velocity->x += df.x;
 			theNode->velocity->y += df.y;
-			//theNode->velocity->z += df.z;
+			theNode->velocity->z += df.z;
 		}
-		
+
 	}
 }
 
@@ -181,29 +185,34 @@ inline void ofxNode::setPosition(float theX, float theY)
 
 
 
-inline void ofxNode::update(float gravity)
+inline void ofxNode::update(float gravity, bool theLockX, bool theLockY, bool theLockZ)
 {
 	if (!locked) {
 		this->velocity->y += gravity;
 	}
 
-	update(false, false, true);
+	update(theLockX, theLockY, theLockZ);
 }
 inline void ofxNode::update(bool theLockX, bool theLockY, bool theLockZ)
 {
 
 	velocity->limit(maxVelocity);
 
-	// prevent oscillating by reducing velocity if angle to previous
-	// velocity is very large
-	/*float da = PVector.angleBetween(velocity, pVelocity);
-	if (!Float.isNaN(da)) {
-	da = PApplet.abs(1 - (da / PApplet.PI));
-	//da = PApplet.pow(da, 4);
-	if (da < 0.5) da = 0;
-	PApplet.println(id + ", " + da);
-	velocity.mult(da);
-	}*/
+
+	//float da = velocity->angle(previousVelocity);
+	//if (!isnan(da)) {
+	//	da = abs(180-da);
+	//	////da = PApplet.pow(da, 4);
+	//	if (da < 1 || (da >85 && da <89))
+	//	{
+	//		cout << da << endl;
+
+	//		da = 0;
+	//		////PApplet.println(id + ", " + da);
+	//		*(velocity) *= 0;
+	//	}
+	//}
+
 	if (!theLockX) x += velocity->x;
 	if (!theLockY) y += velocity->y;
 	if (!theLockZ) z += velocity->z;
@@ -241,7 +250,9 @@ inline void ofxNode::update(bool theLockX, bool theLockY, bool theLockZ)
 
 	velocity->x = velocity->x * (1 - damping);
 	velocity->y = velocity->y * (1 - damping);
-	//velocity->z = velocity->z * (1 - damping);
+	velocity->z = velocity->z * (1 - damping);
+
+	previousVelocity = *velocity;
 }
 
 inline void ofxNode::setBoundary(float theMinX, float theMinY, float theMinZ,
