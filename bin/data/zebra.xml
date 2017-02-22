@@ -1,0 +1,32 @@
+<panel>
+	<Main>
+		<gravity>0</gravity>
+		<lineWidth>2.55102</lineWidth>
+	<randomNodes>0</randomNodes>
+		<numLianas>17</numLianas>
+	<lockX>0</lockX>
+		<lockY>1</lockY>
+		<lockZ>1</lockZ>
+		<lockLastNode>1</lockLastNode>
+	</Main>
+	<Nodes>
+	<nodeRadius>41.6122</nodeRadius>
+	<nodeStrength>-4.08154</nodeStrength>
+	<nodeDiameter>5.06122</nodeDiameter>
+	<nodeDamping>0.0306122</nodeDamping>
+	<nodeRamp>0.77551</nodeRamp>
+	<nodeVelocity>3.9949</nodeVelocity>
+	</Nodes>
+	<Springs>
+		<numNodes>30</numNodes>
+	<springLength>137.755</springLength>
+	<springStiffness>10</springStiffness>
+	<stringDamping>0.984694</stringDamping>
+	</Springs>
+	<Repulsion>
+		<repulsionRadius>117.347</repulsionRadius>
+		<repulsionStrength>494.898</repulsionStrength>
+	<rep.Strength>979.592</rep.Strength>
+	</Repulsion>
+<panel/>
+</panel>
