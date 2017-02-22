@@ -118,9 +118,6 @@ inline void ofxNode::attract(vector<ofxNode*> & theNodes) {
 	for (int i = 0; i< theNodes.size(); i++)
 	{
 		ofxNode *otherNode = theNodes[i];
-		//// stop when empty
-		//if (otherNode == NULL)
-		//	break;
 		// not with itself
 		if (otherNode->id == id)
 			continue;
@@ -132,9 +129,6 @@ inline void ofxNode::attract(vector<ofxNode*> & theNodes, const ofVec3f& repulsi
 	// attraction or repulsion part
 	for (int i = 0; i< theNodes.size(); i++) {
 		ofxNode *otherNode = theNodes[i];
-		//// stop when empty
-		//if (otherNode == NULL)
-		//	break;
 		// not with itself
 		if (otherNode->id == id)
 			continue;
@@ -167,12 +161,12 @@ inline void ofxNode::attract(ofxNode* theNode) {
 		if (theNode->locked) {
 			this->velocity->x -= df.x;
 			this->velocity->y -= df.y;
-			this->velocity->z -= df.z;
+			//this->velocity->z -= df.z;
 		}
 		else {
 			theNode->velocity->x += df.x;
 			theNode->velocity->y += df.y;
-			theNode->velocity->z += df.z;
+			//theNode->velocity->z += df.z;
 		}
 		
 	}
@@ -247,7 +241,7 @@ inline void ofxNode::update(bool theLockX, bool theLockY, bool theLockZ)
 
 	velocity->x = velocity->x * (1 - damping);
 	velocity->y = velocity->y * (1 - damping);
-	velocity->z = velocity->z * (1 - damping);
+	//velocity->z = velocity->z * (1 - damping);
 }
 
 inline void ofxNode::setBoundary(float theMinX, float theMinY, float theMinZ,

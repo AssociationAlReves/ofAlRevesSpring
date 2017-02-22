@@ -17,7 +17,7 @@ void ofApp::setup() {
 	lianaParams.setName("Lianas");
 	lianaParams.add(numNodes.set("numNodes", 20, 2, 1000));
 	lianaParams.add(nodeRadius.set("nodeRadius", 100, 1, 200));
-	lianaParams.add(nodeStrength.set("nodeStrength", -5, -100, 100));
+	lianaParams.add(nodeStrength.set("nodeStrength", -5, -1000, 100));
 	lianaParams.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
 	lianaParams.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
 	lianaParams.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
@@ -26,12 +26,12 @@ void ofApp::setup() {
 
 	lianaParams.add(springLength.set("springLength", 20, 0, 50));
 	lianaParams.add(springStiffness.set("springStiffness", 3, 0, 10));
-	lianaParams.add(stringDamping.set("stringDamping", 0.9, 0, 2));
+	lianaParams.add(stringDamping.set("stringDamping", 0.9, 0, 1));
 	gui.add(lianaParams);
 
 	repulsionParams.setName("Repulsion");
 	repulsionParams.add(repulsionRadius.set("repulsionRadius", 50, 0, 500));
-	repulsionParams.add(repulsionStrength.set("repulsionStrength", 5, -1500, 1500));
+	repulsionParams.add(repulsionStrength.set("repulsionStrength", 5, -1500, 10000));
 	gui.add(repulsionParams);
 	
 	bShowGui = false;
@@ -59,6 +59,8 @@ void ofApp::update() {
 
 		lianas[i]->gravity = gravity;
 		lianas[i]->lineWidth = lineWidth;
+		lianas[i]->repulsionStrength = repulsionStrength;
+		lianas[i]->repulsionRadius = repulsionRadius;
 
 		//
 		// update
@@ -139,14 +141,17 @@ void ofApp::keyPressed(int key) {
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
-	switch (key) {
-	case ' ': bRepulse = false; break;
+
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->keyReleased(key);
 	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y) {
-
+	for (int i = 0; i < lianas.size(); i++) {
+		lianas[i]->mouseMoved(x, y);
+	}
 }
 
 //--------------------------------------------------------------

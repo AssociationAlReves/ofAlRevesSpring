@@ -53,7 +53,11 @@ public:
 	void initNodesAndSprings();
 	void initNodesAndSprings_Liana();
 	void cleanUp();
+
 	void keyPressed(int key);
+	void keyReleased(int key);
+
+	void mouseMoved(int x, int y);
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 
@@ -134,11 +138,14 @@ inline void ofxLiana::initNodesAndSprings_Liana() {
 	// init nodes
 	int width = ofGetWidth();
 	int height = ofGetHeight();
-	float spacing = height / (numNodes-1);
+	float spacing = height / (numNodes - 1);
 	float rad = nodeDiameter / 2.f;
 	for (int i = 0; i < numNodes; i++) {
 		bool isLocked = (i == 0);
-		ofxNode *node = new ofxNode(xPosition + ofRandom(-50,50), spacing * i, isLocked);
+		float xPos = xPosition
+				+ (isLocked ? 0
+					: ofRandom(-50, 50));
+		ofxNode *node = new ofxNode(xPos, spacing * i, isLocked);
 		node->setBoundary(rad, rad, width - rad, height - rad);
 		node->radius = nodeRadius;
 		node->strength = nodeStrength;
@@ -151,19 +158,19 @@ inline void ofxLiana::initNodesAndSprings_Liana() {
 
 	// set springs 
 	for (int i = 0; i < numNodes - 1; i++) {
-		ofxSpring *newSpring = new ofxSpring(*nodes[i], *nodes[i+1]);
+		ofxSpring *newSpring = new ofxSpring(*nodes[i], *nodes[i + 1]);
 		newSpring->length = springLength;
 		newSpring->stiffness = springStiffness;
 		newSpring->damping = stringDamping;
 		newSpring->id = i;
 		springs.push_back(newSpring);
 	}
-	
+
 }
 inline void ofxLiana::setup() {
 	bRepulse = false;
 	repulsionCenter = ofVec3f();
-	
+
 	if (!lianaMode) {
 		initNodesAndSprings();
 	}
@@ -226,6 +233,12 @@ inline void ofxLiana::keyPressed(int key) {
 	}
 }
 //--------------------------------------------------------------
+inline void ofxLiana::keyReleased(int key) {
+	switch (key) {
+	case ' ': bRepulse = false; break;
+	}
+}
+//--------------------------------------------------------------
 inline void ofxLiana::mousePressed(int x, int y, int button) {
 	// Ignore anything greater than this distance
 	float maxDist = 20;
@@ -238,12 +251,18 @@ inline void ofxLiana::mousePressed(int x, int y, int button) {
 		}
 	}
 }
+//--------------------------------------------------------------
+inline void ofxLiana::mouseMoved(int x, int y) {
+	if (bRepulse) {
+		repulsionCenter = ofVec3f(x, y);
+	}
+}
 
 //--------------------------------------------------------------
 inline void ofxLiana::mouseReleased(int x, int y, int button) {
 	if (dragNodeIndex > -1) {
 		dragNodeIndex = -1;
 	}
-	
+
 }
 
