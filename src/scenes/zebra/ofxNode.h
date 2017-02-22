@@ -43,6 +43,8 @@ public:
 	*/
 	float maxZ;
 
+	bool locked; // if true, node can't move (liana top node)
+
 	/**
 	* Velocity vector (speed)
 	*/
@@ -76,13 +78,7 @@ public:
 
 	// ------ constructors ------
 	
-	ofxNode(float theX, float theY);
-
-	ofxNode(float theX, float theY, float theZ);
-
-	ofxNode(const ofxNode& theVector);
-
-	ofxNode();
+	ofxNode(float theX, float theY, bool isLocked);
 
 	void update(float gravity);
 	void update(bool theLockX, bool theLockY, bool theLockZ);
@@ -97,21 +93,7 @@ public:
 
 // ------ constructors ------
 
-inline ofxNode::ofxNode(float theX, float theY) : ofVec3f(theX, theY)
-, minX(std::numeric_limits<float>::min())
-, maxX(std::numeric_limits<float>::max())
-, minY(std::numeric_limits<float>::min())
-, maxY(std::numeric_limits<float>::max())
-, minZ(std::numeric_limits<float>::min())
-, maxZ(std::numeric_limits<float>::max())
-, velocity(new ofVec3f(0))
-, maxVelocity(OFXNODE_VELOCITY)
-, damping(OFXNODE_DAMPING)
-, radius(OFXNODE_RADIUS)
-, strength(OFXNODE_STRENGTH)
-, ramp(OFXNODE_RAMP) {}
-
-inline ofxNode::ofxNode(float theX, float theY, float theZ) : ofVec3f(theX, theY, theZ)
+inline ofxNode::ofxNode(float theX, float theY, bool isLocked) : ofVec3f(theX, theY)
 , minX(std::numeric_limits<float>::min())
 , maxX(std::numeric_limits<float>::max())
 , minY(std::numeric_limits<float>::min())
@@ -124,35 +106,9 @@ inline ofxNode::ofxNode(float theX, float theY, float theZ) : ofVec3f(theX, theY
 , radius(OFXNODE_RADIUS)
 , strength(OFXNODE_STRENGTH)
 , ramp(OFXNODE_RAMP)
-{	}
+, locked(isLocked) 
+{}
 
-inline ofxNode::ofxNode(const ofxNode& theVector) : ofVec3f(theVector.x, theVector.y, theVector.z)
-, minX(std::numeric_limits<float>::min())
-, maxX(std::numeric_limits<float>::max())
-, minY(std::numeric_limits<float>::min())
-, maxY(std::numeric_limits<float>::max())
-, minZ(std::numeric_limits<float>::min())
-, maxZ(std::numeric_limits<float>::max())
-, velocity(new ofVec3f(0))
-, maxVelocity(OFXNODE_VELOCITY)
-, damping(OFXNODE_DAMPING)
-, radius(OFXNODE_RADIUS)
-, strength(OFXNODE_STRENGTH)
-, ramp(OFXNODE_RAMP) {}
-
-inline ofxNode::ofxNode() : ofVec3f(0)
-, minX(std::numeric_limits<float>::min())
-, maxX(std::numeric_limits<float>::max())
-, minY(std::numeric_limits<float>::min())
-, maxY(std::numeric_limits<float>::max())
-, minZ(std::numeric_limits<float>::min())
-, maxZ(std::numeric_limits<float>::max())
-, velocity(new ofVec3f(0))
-, maxVelocity(OFXNODE_VELOCITY)
-, damping(OFXNODE_DAMPING)
-, radius(OFXNODE_RADIUS)
-, strength(OFXNODE_STRENGTH)
-, ramp(OFXNODE_RAMP) {}
 
 
 // ---------------- implementation
@@ -208,9 +164,17 @@ inline void ofxNode::attract(ofxNode* theNode) {
 		ofVec3f df = (ofVec3f)*this - (ofVec3f)(*theNode);
 		df *= f;
 
-		theNode->velocity->x += df.x;
-		theNode->velocity->y += df.y;
-		theNode->velocity->z += df.z;
+		if (theNode->locked) {
+			this->velocity->x -= df.x;
+			this->velocity->y -= df.y;
+			this->velocity->z -= df.z;
+		}
+		else {
+			theNode->velocity->x += df.x;
+			theNode->velocity->y += df.y;
+			theNode->velocity->z += df.z;
+		}
+		
 	}
 }
 
@@ -225,7 +189,9 @@ inline void ofxNode::setPosition(float theX, float theY)
 
 inline void ofxNode::update(float gravity)
 {
-	this->velocity->y += gravity;
+	if (!locked) {
+		this->velocity->y += gravity;
+	}
 
 	update(false, false, true);
 }

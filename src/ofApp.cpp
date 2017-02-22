@@ -129,6 +129,7 @@ void ofApp::keyPressed(int key) {
 	case 'r': initLianas(); break;
 	case 'h': bShowGui = !bShowGui; break;
 	case 'l': gui.loadFromFile(SPRING_SETTINGS_FILE); break;
+	case 's': gui.saveToFile(SPRING_SETTINGS_FILE); break;
 	}
 
 	for (int i = 0; i < lianas.size(); i++) {

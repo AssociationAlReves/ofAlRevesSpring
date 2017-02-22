@@ -54,12 +54,33 @@ inline void ofxSpring::update() {
 	ofVec3f target = (ofVec3f)*fromNode + diff;
 
 	ofVec3f force = target - (ofVec3f)*fromNode;
-	force *= 0.5f;
-	force *= stiffness;
-	force *= (1 - damping);
+	
 
-	*(fromNode->velocity) += force;
-	*(toNode->velocity) += -1*force;
+	if (fromNode->locked) {
+		//force *= 0.5f;
+		force *= stiffness;
+		force *= (1 - damping);
+		//*(fromNode->velocity) += force;
+		*(toNode->velocity) += -1 * force;
+	}
+	else if (toNode->locked) {
+		//force *= 0.5f;
+		force *= stiffness;
+		force *= (1 - damping);
+		*(fromNode->velocity) += force;
+		//*(toNode->velocity) += -1 * force;
+	}
+	else {
+		force *= 0.5f;
+		force *= stiffness;
+		force *= (1 - damping);
+		*(fromNode->velocity) += force;
+		*(toNode->velocity) += -1 * force;
+	}
+
+
+
+	
 	/*(*fromNode)->velocity += force;
 	(*fromNode)->velocity += -1 * force;*/
 }
