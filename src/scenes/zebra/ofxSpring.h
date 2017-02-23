@@ -58,24 +58,26 @@ inline void ofxSpring::update() {
 
 	if (fromNode->locked) {
 		//force *= 0.5f;
-		force *= stiffness;
 		force *= (1 - damping);
+		force *= stiffness;
+		
 		//*(fromNode->velocity) += force;
-		*(toNode->velocity) += -1 * force;
+		*(toNode->velocity) += (-1 * force);
 	}
 	else if (toNode->locked) {
 		//force *= 0.5f;
-		force *= stiffness;
+
 		force *= (1 - damping);
+		force *= stiffness;
 		*(fromNode->velocity) += force;
 		//*(toNode->velocity) += -1 * force;
 	}
 	else {
 		force *= 0.5f;
-		force *= stiffness;
 		force *= (1 - damping);
+		force *= stiffness;
 		*(fromNode->velocity) += force;
-		*(toNode->velocity) += -1 * force;
+		*(toNode->velocity) += (-1 * force);
 	}
 
 

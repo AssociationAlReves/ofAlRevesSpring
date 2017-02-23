@@ -15,16 +15,16 @@
 	<nodeDiameter>5.06122</nodeDiameter>
 	<nodeDamping>0.0306122</nodeDamping>
 	<nodeRamp>0.77551</nodeRamp>
-	<nodeVelocity>10</nodeVelocity>
+	<nodeVelocity>3.9949</nodeVelocity>
 	</Nodes>
 	<Springs>
 		<numNodes>30</numNodes>
-	<springLength>280.612</springLength>
+	<springLength>137.755</springLength>
 	<springStiffness>10</springStiffness>
 	<stringDamping>0.984694</stringDamping>
 	</Springs>
 	<Repulsion>
-		<repulsionRadius>224.49</repulsionRadius>
+		<repulsionRadius>117.347</repulsionRadius>
 		<repulsionStrength>494.898</repulsionStrength>
 	<rep.Strength>979.592</rep.Strength>
 	</Repulsion>

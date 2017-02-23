@@ -13,17 +13,17 @@ void ofApp::setup() {
 	zebraParams.add(lockZ.set("lockZ", true));
 	zebraParams.add(lockLastNode.set("lockLastNode", true));
 	zebraParams.add(numLianas.set("numLianas", 1, 1, 100));
-	zebraParams.add(gravity.set("gravity", 0, -2, 2));
+	zebraParams.add(gravity.set("gravity", 0, -1, 1));
 	zebraParams.add(lineWidth.set("lineWidth", 2, 0, 20));
 	gui.add(zebraParams);
 
 
 	nodeParams.setName("Nodes");
 	nodeParams.add(nodeRadius.set("nodeRadius", 100, 1, 200));
-	nodeParams.add(nodeStrength.set("nodeStrength", -5, -5000, 100));
+	nodeParams.add(nodeStrength.set("nodeStrength", -5, -100, 100));
 	nodeParams.add(nodeDiameter.set("nodeDiameter", 16, 1, 200));
 	nodeParams.add(nodeDamping.set("nodeDamping", 0.1f, -1, 1));
-	nodeParams.add(nodeRamp.set("nodeRamp", 1.f, -1, 5));
+	nodeParams.add(nodeRamp.set("nodeRamp", 1.f, -50, 50));
 	nodeParams.add(nodeVelocity.set("nodeVelocity", 0.99f, -1, 10));
 	gui.add(nodeParams);
 
